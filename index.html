@@ -155,16 +155,11 @@
   }
 
   .menu-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     min-height: 0;
     height: 100%;
-  }
-  @media (max-width: 560px) {
-    .menu-cols {
-      grid-template-columns: 1fr;
-    }
   }
 
   .menu-col {
@@ -172,6 +167,7 @@
     flex-direction: column;
     gap: 10px;
     min-height: 0;
+    flex: 1;
   }
   .menu-col .card {
     flex: 1;
