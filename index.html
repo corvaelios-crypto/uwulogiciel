@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UwU Café - Caisse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+<style>
+  :root {
+    --bg: #241026;
+    --panel: #341a3a;
+    --panel-2: #3d1f45;
+    --accent: #d68fd6;
+    --accent-2: #b45cd1;
+    --text: #f5e9f7;
+    --muted: #c9a8cf;
+    --border: #5a2e63;
+    --danger: #e05a6e;
+    --success: #6ee0a0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(180deg, #2b1330, #1c0c1f);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  header {
+    text-align: center;
+    padding: 20px 16px 10px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+  }
+  header .sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: 1.4fr 1fr;
+      align-items: start;
+    }
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .section-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    margin: 4px 0 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .grid-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+  }
+  .item-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.85rem;
+    transition: transform 0.05s ease, background 0.15s ease;
+    line-height: 1.3;
+  }
+  .item-btn:hover { background: #4a2452; }
+  .item-btn:active { transform: scale(0.96); }
+  .item-btn .price {
+    display: block;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .combo-btn {
+    background: linear-gradient(135deg, #5a2e63, #7a3f8a);
+  }
+  .combo-btn .price { color: #ffd9f5; }
+
+  /* Cart */
+  .cart-list {
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  .cart-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    gap: 8px;
+  }
+  .cart-row .name { flex: 1; }
+  .cart-row .qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .qty-controls button {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .cart-row .line-total {
+    min-width: 70px;
+    text-align: right;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .cart-empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 20px 0;
+    font-style: italic;
+  }
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1.1rem;
+  }
+
+  .total-box {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .total-box .label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+  }
+  .total-box .amount {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .clear-btn {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+  .clear-btn:hover { background: rgba(224,90,110,0.1); }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐱 UwU Café - Caisse</h1>
+  <div class="sub">Menu Event - calcul de facture</div>
+</header>
+
+<div class="layout">
+  <!-- LEFT: Menu -->
+  <div>
+    <div class="card">
+      <div class="section-title">Combos</div>
+      <div class="grid-items" id="combos"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="section-title">Boissons</div>
+      <div class="grid-items" id="boissons"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="section-title">Nourriture</div>
+      <div class="grid-items" id="nourriture"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Cart + Total + Cash -->
+  <div>
+    <div class="card">
+      <div class="section-title">Panier</div>
+      <div class="cart-list" id="cartList">
+        <div class="cart-empty">Aucun article</div>
+      </div>
+
+      <div class="total-box">
+        <div class="label">Total</div>
+        <div class="amount" id="totalAmount">0$</div>
+      </div>
+
+      <button class="clear-btn" id="clearCart">Vider le panier</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const MENU = {
+    combos: [
+      { name: "Le Ptit Nouveau", desc: "2x Boissons, 2x Sucrées", price: 3000 },
+      { name: "Le Chejeûner", desc: "3x Boissons, 3x Plats", price: 5000 },
+      { name: "Le Mini Senior", desc: "3x Boissons Froides, 3x Boissons Chaudes, 3x Plats", price: 7000 },
+      { name: "Le Sphinx Malin", desc: "5x Boissons Froides, 5x Plats, 5x Sucrées, 5x Boissons Chaudes", price: 15000 },
+    ],
+    boissons: [
+      { name: "Café", price: 400 },
+      { name: "Thé Matcha", price: 400 },
+      { name: "Frappé Glacé", price: 400 },
+      { name: "Jus de Fruit (Fraise/Orange)", price: 500 },
+      { name: "Ice Tea", price: 600 },
+    ],
+    nourriture: [
+      { name: "Sucette (Cerise/Fraise)", price: 300 },
+      { name: "Barbe à papa (Kiwi/Framboise)", price: 300 },
+      { name: "Glace (Vanille/Choco/Fraise/Pistache)", price: 600 },
+      { name: "Rouleau de Printemps", price: 700 },
+      { name: "Nem Poulet", price: 700 },
+    ],
+  };
+
+  let cart = [];
+
+  function fmt(n) {
+    return n.toLocaleString('fr-FR') + '$';
+  }
+
+  function renderMenu() {
+    const comboEl = document.getElementById('combos');
+    MENU.combos.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'item-btn combo-btn';
+      btn.innerHTML = `${item.name}<br><span style="font-size:0.75rem;color:var(--muted);">${item.desc}</span><span class="price">${fmt(item.price)}</span>`;
+      btn.onclick = () => addToCart(item.name, item.price);
+      comboEl.appendChild(btn);
+    });
+
+    const boissonEl = document.getElementById('boissons');
+    MENU.boissons.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'item-btn';
+      btn.innerHTML = `${item.name}<span class="price">${fmt(item.price)}</span>`;
+      btn.onclick = () => addToCart(item.name, item.price);
+      boissonEl.appendChild(btn);
+    });
+
+    const nourritureEl = document.getElementById('nourriture');
+    MENU.nourriture.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'item-btn';
+      btn.innerHTML = `${item.name}<span class="price">${fmt(item.price)}</span>`;
+      btn.onclick = () => addToCart(item.name, item.price);
+      nourritureEl.appendChild(btn);
+    });
+  }
+
+  function addToCart(name, price) {
+    const existing = cart.find(c => c.name === name && c.price === price);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+    renderCart();
+  }
+
+  function changeQty(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty <= 0) {
+      cart.splice(index, 1);
+    }
+    renderCart();
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  function renderCart() {
+    const listEl = document.getElementById('cartList');
+    listEl.innerHTML = '';
+
+    if (cart.length === 0) {
+      listEl.innerHTML = '<div class="cart-empty">Aucun article</div>';
+    } else {
+      cart.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = 'cart-row';
+        row.innerHTML = `
+          <span class="name">${item.name}<br><span style="color:var(--muted);font-size:0.8rem;">${fmt(item.price)} / unité</span></span>
+          <span class="qty-controls">
+            <button data-action="dec">-</button>
+            <span>${item.qty}</span>
+            <button data-action="inc">+</button>
+          </span>
+          <span class="line-total">${fmt(item.price * item.qty)}</span>
+          <button class="remove-btn" data-action="remove">✕</button>
+        `;
+        row.querySelector('[data-action="dec"]').onclick = () => changeQty(index, -1);
+        row.querySelector('[data-action="inc"]').onclick = () => changeQty(index, 1);
+        row.querySelector('[data-action="remove"]').onclick = () => removeItem(index);
+        listEl.appendChild(row);
+      });
+    }
+
+    updateTotal();
+  }
+
+  function getTotal() {
+    return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  }
+
+  function updateTotal() {
+    document.getElementById('totalAmount').textContent = fmt(getTotal());
+  }
+
+  document.getElementById('clearCart').onclick = () => {
+    cart = [];
+    renderCart();
+  };
+
+  renderMenu();
+  renderCart();
+</script>
+
+</body>
+</html>
