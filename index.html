@@ -139,7 +139,7 @@
     grid-template-columns: 1.4fr 1fr;
     gap: 10px;
   }
-  .lower .menu-col {
+  .lower .menu-cols {
     animation: fadeSlideUp 0.5s ease both;
     animation-delay: 0.16s;
   }
@@ -151,6 +151,19 @@
     .lower {
       grid-template-columns: 1fr;
       grid-template-rows: 1fr 1fr;
+    }
+  }
+
+  .menu-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    min-height: 0;
+    height: 100%;
+  }
+  @media (max-width: 560px) {
+    .menu-cols {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -531,7 +544,10 @@
   </div>
 
   <div class="lower">
-    <div class="menu-col" id="menuCol"></div>
+    <div class="menu-cols">
+      <div class="menu-col" id="boissonCol"></div>
+      <div class="menu-col" id="nourritureCol"></div>
+    </div>
 
     <div class="cart-panel card">
       <div class="section-title">Panier</div>
@@ -573,7 +589,7 @@
           contents: [{ label: "Boissons Froides", qty: 5 }, { label: "Plats", qty: 5 }, { label: "Sucrées", qty: 5 }, { label: "Boissons Chaudes", qty: 5 }],
         },
       ],
-      sections: [
+      boissonSections: [
         {
           title: "Boissons",
           items: [
@@ -584,6 +600,8 @@
             { name: "Ice Tea", price: 600 },
           ],
         },
+      ],
+      nourritureSections: [
         {
           title: "Nourriture",
           items: [
@@ -640,7 +658,7 @@
           contents: [{ label: "Bubble Tea Chocolat", qty: 5 }, { label: "Café Latté", qty: 5 }, { label: "Glace Vanille", qty: 5 }, { label: "Mochi Chocolat", qty: 5 }],
         },
       ],
-      sections: [
+      boissonSections: [
         {
           title: "Boissons Chaudes",
           items: [
@@ -663,6 +681,8 @@
             { name: "Bubble Tea", price: 700, flavors: ["Chocolat", "Fraise", "Framboise", "Pêche", "Kiwi", "Exotic"] },
           ],
         },
+      ],
+      nourritureSections: [
         {
           title: "Nourriture Sucrée",
           items: [
@@ -688,7 +708,8 @@
   };
 
   let currentMenu = 'event';
-  let sectionIndex = 0;
+  let boissonIndex = 0;
+  let nourritureIndex = 0;
   let comboPage = 0;
 
   let cart = [];
@@ -718,8 +739,10 @@
     document.querySelector('header .sub').textContent = MENUS[currentMenu].label;
     comboPage = 0;
     renderCombos();
-    sectionIndex = 0;
-    renderSection();
+    boissonIndex = 0;
+    nourritureIndex = 0;
+    renderCarousel('boissonCol', MENUS[currentMenu].boissonSections, boissonIndex, (i) => { boissonIndex = i; });
+    renderCarousel('nourritureCol', MENUS[currentMenu].nourritureSections, nourritureIndex, (i) => { nourritureIndex = i; });
   }
 
   function renderCombos() {
@@ -747,13 +770,12 @@
     });
   }
 
-  function renderSection() {
-    const menu = MENUS[currentMenu];
-    const menuCol = document.getElementById('menuCol');
+  function renderCarousel(colId, sections, index, setIndex) {
+    const menuCol = document.getElementById(colId);
     menuCol.innerHTML = '';
 
     if (currentMenu === 'event') {
-      menu.sections.forEach(section => {
+      sections.forEach(section => {
         const card = document.createElement('div');
         card.className = 'card';
         const title = document.createElement('div');
@@ -769,7 +791,7 @@
       return;
     }
 
-    const section = menu.sections[sectionIndex];
+    const section = sections[index];
 
     const card = document.createElement('div');
     card.className = 'card section-card';
@@ -780,23 +802,25 @@
     const prevBtn = document.createElement('button');
     prevBtn.className = 'section-arrow';
     prevBtn.textContent = '‹';
-    prevBtn.disabled = menu.sections.length <= 1;
+    prevBtn.disabled = sections.length <= 1;
     prevBtn.onclick = () => {
-      sectionIndex = (sectionIndex - 1 + menu.sections.length) % menu.sections.length;
-      renderSection();
+      const newIndex = (index - 1 + sections.length) % sections.length;
+      setIndex(newIndex);
+      renderCarousel(colId, sections, newIndex, setIndex);
     };
 
     const title = document.createElement('div');
     title.className = 'section-title section-title-nav';
-    title.textContent = `${section.title} (${sectionIndex + 1}/${menu.sections.length})`;
+    title.textContent = `${section.title} (${index + 1}/${sections.length})`;
 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'section-arrow';
     nextBtn.textContent = '›';
-    nextBtn.disabled = menu.sections.length <= 1;
+    nextBtn.disabled = sections.length <= 1;
     nextBtn.onclick = () => {
-      sectionIndex = (sectionIndex + 1) % menu.sections.length;
-      renderSection();
+      const newIndex = (index + 1) % sections.length;
+      setIndex(newIndex);
+      renderCarousel(colId, sections, newIndex, setIndex);
     };
 
     nav.appendChild(prevBtn);
