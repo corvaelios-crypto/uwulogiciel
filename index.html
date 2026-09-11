@@ -2,146 +2,227 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UwU Café - Caisse</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UwU Cafe - Caisse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%90%B1</text></svg>">
 <style>
   :root {
-    --bg: #241026;
-    --panel: #341a3a;
-    --panel-2: #3d1f45;
-    --accent: #d68fd6;
-    --accent-2: #b45cd1;
-    --text: #f5e9f7;
-    --muted: #c9a8cf;
-    --border: #5a2e63;
-    --danger: #e05a6e;
-    --success: #6ee0a0;
+    --bg-1: #1b0c22;
+    --bg-2: #2c1338;
+    --panel: rgba(255,255,255,0.05);
+    --panel-solid: #2a1433;
+    --panel-2: #3a1c47;
+    --accent: #f0a8e0;
+    --accent-2: #c869d6;
+    --accent-3: #8a4fd1;
+    --text: #f8ecfa;
+    --muted: #b89ac2;
+    --border: rgba(255,255,255,0.08);
+    --danger: #ef6f86;
+    --shadow: 0 8px 24px rgba(0,0,0,0.35);
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    overscroll-behavior: none;
+    touch-action: manipulation;
+  }
   body {
     margin: 0;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: linear-gradient(180deg, #2b1330, #1c0c1f);
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(200,105,214,0.25), transparent 45%),
+      radial-gradient(circle at 100% 20%, rgba(138,79,209,0.2), transparent 50%),
+      linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    background-attachment: fixed;
     color: var(--text);
     min-height: 100vh;
-    padding-bottom: 40px;
+    padding-bottom: 24px;
+    -webkit-user-select: none;
+    user-select: none;
   }
   header {
     text-align: center;
-    padding: 20px 16px 10px;
+    padding: 28px 16px 16px;
   }
   header h1 {
     margin: 0;
-    font-size: 1.8rem;
-    letter-spacing: 1px;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    letter-spacing: 0.5px;
+    font-weight: 700;
   }
   header .sub {
     color: var(--muted);
-    font-size: 0.9rem;
-    margin-top: 4px;
+    font-size: 0.95rem;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
   }
   .layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
-    max-width: 1100px;
+    gap: 18px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0 18px;
   }
   @media (min-width: 900px) {
     .layout {
-      grid-template-columns: 1.4fr 1fr;
+      grid-template-columns: 1.5fr 1fr;
       align-items: start;
+    }
+    .cart-panel {
+      position: sticky;
+      top: 18px;
     }
   }
   .card {
     background: var(--panel);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: var(--shadow);
   }
   .section-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     color: var(--accent);
-    margin: 4px 0 10px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 6px;
+    margin: 2px 0 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::before {
+    content: "";
+    width: 4px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-3));
   }
   .grid-items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
   }
   .item-btn {
     background: var(--panel-2);
     border: 1px solid var(--border);
     color: var(--text);
-    border-radius: 10px;
-    padding: 10px 8px;
+    border-radius: 16px;
+    padding: 16px 12px;
     cursor: pointer;
     text-align: center;
-    font-size: 0.85rem;
-    transition: transform 0.05s ease, background 0.15s ease;
-    line-height: 1.3;
-  }
-  .item-btn:hover { background: #4a2452; }
-  .item-btn:active { transform: scale(0.96); }
-  .item-btn .price {
-    display: block;
-    color: var(--accent);
+    font-size: 0.9rem;
     font-weight: 600;
-    margin-top: 4px;
+    line-height: 1.35;
+    min-height: 76px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .item-btn:active {
+    transform: scale(0.94);
+    background: #4c2559;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .item-btn .desc {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .item-btn .price {
+    display: inline-block;
+    color: #1b0c22;
+    background: var(--accent);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 3px 10px;
+    border-radius: 20px;
   }
   .combo-btn {
-    background: linear-gradient(135deg, #5a2e63, #7a3f8a);
+    background: linear-gradient(150deg, #6a2f8a, #a24fd1 60%, #d66fc9);
+    border: 1px solid rgba(255,255,255,0.15);
+    min-height: 96px;
   }
-  .combo-btn .price { color: #ffd9f5; }
+  .combo-btn .desc { color: rgba(255,255,255,0.8); }
+  .combo-btn .price { background: #fff; color: #6a2f8a; }
+  .combo-btn:active { background: linear-gradient(150deg, #5a2678, #8f44ba 60%, #c15fb5); }
 
   /* Cart */
   .cart-list {
-    max-height: 320px;
+    max-height: 46vh;
     overflow-y: auto;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
+    -webkit-overflow-scrolling: touch;
   }
   .cart-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 4px;
+    padding: 12px 6px;
     border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
-    gap: 8px;
+    font-size: 0.95rem;
+    gap: 10px;
   }
-  .cart-row .name { flex: 1; }
+  .cart-row:last-child { border-bottom: none; }
+  .cart-row .name {
+    flex: 1;
+    font-weight: 600;
+    min-width: 0;
+  }
+  .cart-row .unit-price {
+    display: block;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 400;
+    margin-top: 2px;
+  }
   .cart-row .qty-controls {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 4px;
   }
   .qty-controls button {
     background: var(--panel-2);
-    border: 1px solid var(--border);
+    border: none;
     color: var(--text);
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
     line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qty-controls button:active { background: var(--accent-3); transform: scale(0.92); }
+  .qty-controls span {
+    min-width: 22px;
+    text-align: center;
+    font-weight: 700;
   }
   .cart-row .line-total {
-    min-width: 70px;
+    min-width: 76px;
     text-align: right;
     color: var(--accent);
-    font-weight: 600;
+    font-weight: 700;
   }
   .cart-empty {
     color: var(--muted);
     text-align: center;
-    padding: 20px 0;
+    padding: 32px 0;
     font-style: italic;
   }
   .remove-btn {
@@ -149,71 +230,79 @@
     border: none;
     color: var(--danger);
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
   }
+  .remove-btn:active { background: rgba(239,111,134,0.15); }
 
   .total-box {
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent-2));
+    border-radius: 16px;
+    padding: 18px;
     text-align: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 18px rgba(138,79,209,0.35);
   }
   .total-box .label {
-    color: var(--muted);
+    color: rgba(255,255,255,0.85);
     font-size: 0.85rem;
     text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
   }
   .total-box .amount {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--accent);
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
   }
 
   .clear-btn {
     width: 100%;
-    padding: 10px;
+    padding: 14px;
     background: transparent;
-    border: 1px solid var(--danger);
+    border: 1.5px solid var(--danger);
     color: var(--danger);
-    border-radius: 10px;
+    border-radius: 14px;
     cursor: pointer;
-    font-size: 0.9rem;
-    margin-bottom: 16px;
+    font-size: 0.95rem;
+    font-weight: 700;
   }
-  .clear-btn:hover { background: rgba(224,90,110,0.1); }
+  .clear-btn:active { background: rgba(239,111,134,0.15); }
 
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🐱 UwU Café - Caisse</h1>
-  <div class="sub">Menu Event - calcul de facture</div>
+  <h1>UwU Cafe - Caisse</h1>
+  <div class="sub">Menu Event</div>
 </header>
 
 <div class="layout">
-  <!-- LEFT: Menu -->
   <div>
-    <div class="card">
+    <div class="card" style="margin-bottom:18px;">
       <div class="section-title">Combos</div>
       <div class="grid-items" id="combos"></div>
     </div>
 
-    <div class="card" style="margin-top:16px;">
+    <div class="card" style="margin-bottom:18px;">
       <div class="section-title">Boissons</div>
       <div class="grid-items" id="boissons"></div>
     </div>
 
-    <div class="card" style="margin-top:16px;">
+    <div class="card">
       <div class="section-title">Nourriture</div>
       <div class="grid-items" id="nourriture"></div>
     </div>
   </div>
 
-  <!-- RIGHT: Cart + Total + Cash -->
-  <div>
+  <div class="cart-panel">
     <div class="card">
       <div class="section-title">Panier</div>
       <div class="cart-list" id="cartList">
@@ -265,7 +354,7 @@
     MENU.combos.forEach(item => {
       const btn = document.createElement('button');
       btn.className = 'item-btn combo-btn';
-      btn.innerHTML = `${item.name}<br><span style="font-size:0.75rem;color:var(--muted);">${item.desc}</span><span class="price">${fmt(item.price)}</span>`;
+      btn.innerHTML = `<span>${item.name}</span><span class="desc">${item.desc}</span><span class="price">${fmt(item.price)}</span>`;
       btn.onclick = () => addToCart(item.name, item.price);
       comboEl.appendChild(btn);
     });
@@ -274,7 +363,7 @@
     MENU.boissons.forEach(item => {
       const btn = document.createElement('button');
       btn.className = 'item-btn';
-      btn.innerHTML = `${item.name}<span class="price">${fmt(item.price)}</span>`;
+      btn.innerHTML = `<span>${item.name}</span><span class="price">${fmt(item.price)}</span>`;
       btn.onclick = () => addToCart(item.name, item.price);
       boissonEl.appendChild(btn);
     });
@@ -283,7 +372,7 @@
     MENU.nourriture.forEach(item => {
       const btn = document.createElement('button');
       btn.className = 'item-btn';
-      btn.innerHTML = `${item.name}<span class="price">${fmt(item.price)}</span>`;
+      btn.innerHTML = `<span>${item.name}</span><span class="price">${fmt(item.price)}</span>`;
       btn.onclick = () => addToCart(item.name, item.price);
       nourritureEl.appendChild(btn);
     });
@@ -323,7 +412,7 @@
         const row = document.createElement('div');
         row.className = 'cart-row';
         row.innerHTML = `
-          <span class="name">${item.name}<br><span style="color:var(--muted);font-size:0.8rem;">${fmt(item.price)} / unité</span></span>
+          <span class="name">${item.name}<span class="unit-price">${fmt(item.price)} / unité</span></span>
           <span class="qty-controls">
             <button data-action="dec">-</button>
             <span>${item.qty}</span>
