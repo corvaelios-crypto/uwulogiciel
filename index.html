@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="UwU Cafe">
 <link rel="icon" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <style>
   :root {
     --bg-1: #fdf1fa;
@@ -695,6 +696,12 @@
 
   renderMenu();
   renderCart();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js');
+    });
+  }
 </script>
 
 </body>

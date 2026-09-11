@@ -1,0 +1,15 @@
+{
+  "name": "UwU Cafe - Caisse",
+  "short_name": "UwU Cafe",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffe3f4",
+  "theme_color": "#ff4fc3",
+  "icons": [
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "666x666",
+      "type": "image/png"
+    }
+  ]
+}
