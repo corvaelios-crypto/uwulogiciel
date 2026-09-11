@@ -494,9 +494,20 @@
   };
 
   let cart = [];
+  let lastAddKey = '';
+  let lastAddTime = 0;
 
   function fmt(n) {
     return n.toLocaleString('fr-FR') + '$';
+  }
+
+  function addToCartDebounced(name, price) {
+    const key = name + '|' + price;
+    const now = Date.now();
+    if (key === lastAddKey && now - lastAddTime < 400) return;
+    lastAddKey = key;
+    lastAddTime = now;
+    addToCart(name, price);
   }
 
   function renderMenu() {
@@ -505,7 +516,7 @@
       const btn = document.createElement('button');
       btn.className = 'item-btn combo-btn';
       btn.innerHTML = `<span class="name"><span class="title">${item.name}</span><span class="desc">${item.desc}</span></span><span class="price">${fmt(item.price)}</span>`;
-      btn.onclick = () => addToCart(item.name, item.price);
+      btn.onclick = () => addToCartDebounced(item.name, item.price);
       comboEl.appendChild(btn);
     });
 
@@ -521,7 +532,7 @@
       const btn = document.createElement('button');
       btn.className = 'item-btn';
       btn.innerHTML = `<span class="name">${item.name}</span><span class="price">${fmt(item.price)}</span>`;
-      btn.onclick = () => addToCart(item.name, item.price);
+      btn.onclick = () => addToCartDebounced(item.name, item.price);
       return btn;
     }
 
@@ -534,12 +545,12 @@
     const front = document.createElement('button');
     front.className = 'item-btn flip-front';
     front.innerHTML = `<span class="name">${item.name}</span><span class="price">${fmt(item.price)}</span>`;
-    front.onclick = () => addToCart(item.name, item.price);
+    front.onclick = () => addToCartDebounced(item.name, item.price);
 
     const back = document.createElement('button');
     back.className = 'item-btn flip-back';
     back.innerHTML = `<span class="flavors">${item.flavors.join(' · ')}</span>`;
-    back.onclick = () => addToCart(item.name, item.price);
+    back.onclick = () => addToCartDebounced(item.name, item.price);
 
     inner.appendChild(front);
     inner.appendChild(back);
