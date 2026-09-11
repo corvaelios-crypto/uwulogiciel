@@ -26,6 +26,7 @@
   html, body {
     overscroll-behavior: none;
     touch-action: manipulation;
+    height: 100%;
   }
   body {
     margin: 0;
@@ -36,104 +37,141 @@
       linear-gradient(180deg, var(--bg-2), var(--bg-1));
     background-attachment: fixed;
     color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 24px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
     -webkit-user-select: none;
     user-select: none;
+    overflow: hidden;
   }
   header {
     text-align: center;
-    padding: 24px 16px 16px;
+    padding: 10px 16px 8px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 10px;
+    flex-shrink: 0;
   }
   header .logo {
-    width: 72px;
-    height: 72px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
-    filter: drop-shadow(0 4px 10px rgba(255,79,195,0.35));
+    filter: drop-shadow(0 3px 6px rgba(255,79,195,0.35));
   }
   header h1 {
     margin: 0;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    letter-spacing: 0.5px;
+    font-size: 1.3rem;
+    letter-spacing: 0.3px;
     font-weight: 800;
     color: var(--accent-3);
   }
   header .sub {
     color: var(--muted);
-    font-size: 0.95rem;
-    letter-spacing: 0.3px;
+    font-size: 0.8rem;
     font-weight: 600;
   }
+
   .layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-    max-width: 1200px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 1300px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 18px;
+    padding: 0 12px 12px;
   }
-  @media (min-width: 900px) {
-    .layout {
-      grid-template-columns: 1.5fr 1fr;
-      align-items: start;
-    }
-    .cart-panel {
-      position: sticky;
-      top: 18px;
-    }
+
+  .combos-bar {
+    flex-shrink: 0;
   }
+
+  .lower {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 780px) {
+    .lower {
+      grid-template-columns: 1fr;
+    }
+    .menu-col { min-height: 0; }
+  }
+
+  .menu-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 2px;
+  }
+
   .card {
     background: var(--panel);
     backdrop-filter: blur(10px);
     border: 2px solid var(--border);
-    border-radius: 20px;
-    padding: 18px;
+    border-radius: 16px;
+    padding: 12px;
     box-shadow: var(--shadow);
   }
+  .card.combos-card { padding: 10px 12px; }
+  .cart-panel.card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
   .section-title {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--accent);
-    margin: 2px 0 14px;
+    margin: 0 0 8px;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   .section-title::before {
     content: "";
     width: 4px;
-    height: 16px;
+    height: 13px;
     border-radius: 2px;
     background: linear-gradient(180deg, var(--accent), var(--accent-3));
   }
+
   .grid-items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
   }
+  .combos-bar .grid-items {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
   .item-btn {
     background: #ffffff;
     border: 2px solid var(--border);
     color: var(--text);
-    border-radius: 16px;
-    padding: 16px 12px;
+    border-radius: 14px;
+    padding: 10px 8px;
     cursor: pointer;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    line-height: 1.35;
-    min-height: 76px;
+    line-height: 1.25;
+    min-height: 58px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
     box-shadow: 0 2px 6px rgba(255,79,195,0.12);
   }
@@ -143,7 +181,7 @@
     box-shadow: 0 1px 3px rgba(255,79,195,0.12);
   }
   .item-btn .desc {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 500;
     color: var(--muted);
   }
@@ -152,14 +190,15 @@
     color: #fff;
     background: var(--accent);
     font-weight: 800;
-    font-size: 0.85rem;
-    padding: 3px 10px;
+    font-size: 0.78rem;
+    padding: 2px 9px;
     border-radius: 20px;
   }
   .combo-btn {
     background: linear-gradient(150deg, #ff4fc3, #ff7ad1 60%, #ffa8e0);
     border: 2px solid rgba(255,255,255,0.6);
-    min-height: 96px;
+    min-height: 64px;
+    padding: 10px 10px;
   }
   .combo-btn, .combo-btn .desc { color: #fff; }
   .combo-btn .desc { color: rgba(255,255,255,0.85); }
@@ -168,19 +207,20 @@
 
   /* Cart */
   .cart-list {
-    max-height: 46vh;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     -webkit-overflow-scrolling: touch;
   }
   .cart-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 6px;
+    padding: 8px 4px;
     border-bottom: 2px solid var(--border);
-    font-size: 0.95rem;
-    gap: 10px;
+    font-size: 0.88rem;
+    gap: 8px;
   }
   .cart-row:last-child { border-bottom: none; }
   .cart-row .name {
@@ -191,27 +231,27 @@
   .cart-row .unit-price {
     display: block;
     color: var(--muted);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 400;
-    margin-top: 2px;
+    margin-top: 1px;
   }
   .cart-row .qty-controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     background: var(--panel-2);
-    border-radius: 12px;
-    padding: 4px;
+    border-radius: 10px;
+    padding: 3px;
   }
   .qty-controls button {
     background: #fff;
     border: 1.5px solid var(--border);
     color: var(--accent-3);
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 800;
     line-height: 1;
     display: flex;
@@ -220,54 +260,59 @@
   }
   .qty-controls button:active { background: var(--accent); color: #fff; transform: scale(0.92); }
   .qty-controls span {
-    min-width: 22px;
+    min-width: 18px;
     text-align: center;
     font-weight: 700;
+    font-size: 0.85rem;
   }
   .cart-row .line-total {
-    min-width: 76px;
+    min-width: 66px;
     text-align: right;
     color: var(--accent);
     font-weight: 700;
+    font-size: 0.85rem;
   }
   .cart-empty {
     color: var(--muted);
     text-align: center;
-    padding: 32px 0;
+    padding: 20px 0;
     font-style: italic;
+    font-size: 0.85rem;
   }
   .remove-btn {
     background: transparent;
     border: none;
     color: var(--danger);
     cursor: pointer;
-    font-size: 1.3rem;
-    width: 34px;
-    height: 34px;
+    font-size: 1.1rem;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9px;
+    border-radius: 8px;
+    flex-shrink: 0;
   }
   .remove-btn:active { background: rgba(229,57,95,0.12); }
 
   .total-box {
     background: linear-gradient(135deg, var(--accent-3), var(--accent));
-    border-radius: 16px;
-    padding: 18px;
+    border-radius: 14px;
+    padding: 12px;
     text-align: center;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     box-shadow: 0 6px 18px rgba(255,79,195,0.3);
+    flex-shrink: 0;
   }
   .total-box .label {
     color: rgba(255,255,255,0.85);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;
   }
   .total-box .amount {
-    font-size: 2.6rem;
+    font-size: 2rem;
     font-weight: 800;
     color: #fff;
     letter-spacing: 0.5px;
@@ -275,14 +320,15 @@
 
   .clear-btn {
     width: 100%;
-    padding: 14px;
+    padding: 10px;
     background: transparent;
     border: 2px solid var(--danger);
     color: var(--danger);
-    border-radius: 14px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     font-weight: 700;
+    flex-shrink: 0;
   }
   .clear-btn:active { background: rgba(229,57,95,0.12); }
 
@@ -292,30 +338,34 @@
 
 <header>
   <img class="logo" src="assets/logo.png" alt="UwU Cafe">
-  <h1>UwU Cafe - Caisse</h1>
-  <div class="sub">Menu Event</div>
+  <div>
+    <h1>UwU Cafe - Caisse</h1>
+    <div class="sub">Menu Event</div>
+  </div>
 </header>
 
 <div class="layout">
-  <div>
-    <div class="card" style="margin-bottom:18px;">
+  <div class="combos-bar">
+    <div class="card combos-card">
       <div class="section-title">Combos</div>
       <div class="grid-items" id="combos"></div>
     </div>
-
-    <div class="card" style="margin-bottom:18px;">
-      <div class="section-title">Boissons</div>
-      <div class="grid-items" id="boissons"></div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Nourriture</div>
-      <div class="grid-items" id="nourriture"></div>
-    </div>
   </div>
 
-  <div class="cart-panel">
-    <div class="card">
+  <div class="lower">
+    <div class="menu-col">
+      <div class="card">
+        <div class="section-title">Boissons</div>
+        <div class="grid-items" id="boissons"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Nourriture</div>
+        <div class="grid-items" id="nourriture"></div>
+      </div>
+    </div>
+
+    <div class="cart-panel card">
       <div class="section-title">Panier</div>
       <div class="cart-list" id="cartList">
         <div class="cart-empty">Aucun article</div>
