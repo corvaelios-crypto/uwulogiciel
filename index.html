@@ -504,7 +504,7 @@
   function addToCartDebounced(name, price) {
     const key = name + '|' + price;
     const now = Date.now();
-    if (key === lastAddKey && now - lastAddTime < 400) return;
+    if (key === lastAddKey && now - lastAddTime < 150) return;
     lastAddKey = key;
     lastAddTime = now;
     addToCart(name, price);
