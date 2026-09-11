@@ -45,6 +45,7 @@
     overflow: hidden;
   }
   header {
+    position: relative;
     text-align: center;
     padding: 10px 16px 8px;
     display: flex;
@@ -52,6 +53,26 @@
     justify-content: center;
     gap: 10px;
     flex-shrink: 0;
+  }
+  .flavors-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    border: 2px solid var(--accent);
+    color: var(--accent-3);
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255,79,195,0.15);
+  }
+  .flavors-toggle:active { transform: translateY(-50%) scale(0.95); }
+  .flavors-toggle.active {
+    background: var(--accent);
+    color: #fff;
   }
   header .logo {
     width: 40px;
@@ -248,7 +269,7 @@
     transition: transform 0.5s;
     transform-style: preserve-3d;
   }
-  .flip-card.flipped .flip-inner {
+  body.show-flavors .flip-card .flip-inner {
     transform: rotateY(180deg);
   }
   .flip-front, .flip-back {
@@ -269,31 +290,6 @@
     color: var(--accent-3);
     line-height: 1.4;
     padding: 0 4px;
-  }
-  .info-btn {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: none;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: 800;
-    font-style: italic;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
-  }
-  .info-btn:active { transform: scale(0.9); }
-  .info-btn.back-btn {
-    background: var(--danger);
-    font-style: normal;
   }
 
   /* Cart */
@@ -433,6 +429,7 @@
     <h1>UwU Cafe - Caisse</h1>
     <div class="sub">Menu Event</div>
   </div>
+  <button class="flavors-toggle" id="flavorsToggle" type="button">🍓 Saveurs</button>
 </header>
 
 <div class="layout">
@@ -536,33 +533,13 @@
 
     const front = document.createElement('button');
     front.className = 'item-btn flip-front';
-    front.innerHTML = `
-      <button class="info-btn" type="button" aria-label="Voir les saveurs">i</button>
-      <span class="name">${item.name}</span>
-      <span class="price">${fmt(item.price)}</span>
-    `;
-    front.onclick = (e) => {
-      if (e.target.closest('.info-btn')) return;
-      addToCart(item.name, item.price);
-    };
-    front.querySelector('.info-btn').onclick = (e) => {
-      e.stopPropagation();
-      flip.classList.add('flipped');
-    };
+    front.innerHTML = `<span class="name">${item.name}</span><span class="price">${fmt(item.price)}</span>`;
+    front.onclick = () => addToCart(item.name, item.price);
 
     const back = document.createElement('button');
     back.className = 'item-btn flip-back';
-    back.innerHTML = `
-      <button class="info-btn back-btn" type="button" aria-label="Retour">✕</button>
-      <span class="flavors">${item.flavors.join(' · ')}</span>
-    `;
-    back.onclick = (e) => {
-      if (e.target.closest('.info-btn')) return;
-    };
-    back.querySelector('.info-btn').onclick = (e) => {
-      e.stopPropagation();
-      flip.classList.remove('flipped');
-    };
+    back.innerHTML = `<span class="flavors">${item.flavors.join(' · ')}</span>`;
+    back.onclick = () => addToCart(item.name, item.price);
 
     inner.appendChild(front);
     inner.appendChild(back);
@@ -634,6 +611,11 @@
   document.getElementById('clearCart').onclick = () => {
     cart = [];
     renderCart();
+  };
+
+  document.getElementById('flavorsToggle').onclick = (e) => {
+    document.body.classList.toggle('show-flavors');
+    e.currentTarget.classList.toggle('active');
   };
 
   renderMenu();
