@@ -521,7 +521,11 @@
 <div class="layout">
   <div class="combos-bar">
     <div class="card combos-card">
-      <div class="section-title">Combos</div>
+      <div class="section-nav">
+        <button class="section-arrow" id="combosPrev">‹</button>
+        <div class="section-title section-title-nav" id="combosTitle">Combos</div>
+        <button class="section-arrow" id="combosNext">›</button>
+      </div>
       <div class="grid-items" id="combos"></div>
     </div>
   </div>
@@ -685,6 +689,7 @@
 
   let currentMenu = 'event';
   let sectionIndex = 0;
+  let comboPage = 0;
 
   let cart = [];
   let lastAddKey = '';
@@ -707,22 +712,34 @@
     return contents.map(c => `${c.qty * multiplier}x ${c.label}`).join(', ');
   }
 
+  const COMBOS_PER_PAGE = 4;
+
   function renderMenu() {
+    document.querySelector('header .sub').textContent = MENUS[currentMenu].label;
+    comboPage = 0;
+    renderCombos();
+    sectionIndex = 0;
+    renderSection();
+  }
+
+  function renderCombos() {
     const menu = MENUS[currentMenu];
-    document.querySelector('header .sub').textContent = menu.label;
+    const pageCount = Math.ceil(menu.combos.length / COMBOS_PER_PAGE);
+    const pageItems = menu.combos.slice(comboPage * COMBOS_PER_PAGE, comboPage * COMBOS_PER_PAGE + COMBOS_PER_PAGE);
+
+    document.getElementById('combosTitle').textContent = `Combos (${comboPage + 1}/${pageCount})`;
+    document.getElementById('combosPrev').disabled = pageCount <= 1;
+    document.getElementById('combosNext').disabled = pageCount <= 1;
 
     const comboEl = document.getElementById('combos');
     comboEl.innerHTML = '';
-    menu.combos.forEach(item => {
+    pageItems.forEach(item => {
       const btn = document.createElement('button');
       btn.className = 'item-btn combo-btn';
       btn.innerHTML = `<span class="name"><span class="title">${item.name}</span><span class="desc">${contentsLabel(item.contents, 1)}</span></span><span class="price">${fmt(item.price)}</span>`;
       btn.onclick = () => addToCartDebounced(item.name, item.price, item.contents);
       comboEl.appendChild(btn);
     });
-
-    sectionIndex = 0;
-    renderSection();
   }
 
   function renderSection() {
@@ -885,6 +902,17 @@
     document.body.classList.remove('show-flavors');
     document.getElementById('flavorsToggle').classList.remove('active');
     renderMenu();
+  };
+
+  document.getElementById('combosPrev').onclick = () => {
+    const pageCount = Math.ceil(MENUS[currentMenu].combos.length / COMBOS_PER_PAGE);
+    comboPage = (comboPage - 1 + pageCount) % pageCount;
+    renderCombos();
+  };
+  document.getElementById('combosNext').onclick = () => {
+    const pageCount = Math.ceil(MENUS[currentMenu].combos.length / COMBOS_PER_PAGE);
+    comboPage = (comboPage + 1) % pageCount;
+    renderCombos();
   };
 
   renderMenu();
