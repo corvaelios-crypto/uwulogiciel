@@ -170,6 +170,7 @@
   }
 
   .item-btn {
+    position: relative;
     background: #ffffff;
     border: 2px solid var(--border);
     color: var(--text);
@@ -232,6 +233,68 @@
   .combo-btn .desc { color: rgba(255,255,255,0.85); }
   .combo-btn .price { background: #fff; color: var(--accent-3); }
   .combo-btn:active { background: linear-gradient(150deg, #e83fae, #e864bd 60%, #e893cc); }
+
+  /* Flip cards (flavors) */
+  .flip-card {
+    perspective: 800px;
+    min-height: 62px;
+    height: 100%;
+  }
+  .flip-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 62px;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-front, .flip-back {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+  }
+  .flip-back {
+    transform: rotateY(180deg);
+    background: var(--panel-2);
+    justify-content: center;
+  }
+  .flavors {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-3);
+    line-height: 1.4;
+    padding: 0 4px;
+  }
+  .info-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    font-style: italic;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+  .info-btn:active { transform: scale(0.9); }
+  .info-btn.back-btn {
+    background: var(--danger);
+    font-style: normal;
+  }
 
   /* Cart */
   .cart-list {
@@ -421,13 +484,13 @@
       { name: "Café", price: 400 },
       { name: "Thé Matcha", price: 400 },
       { name: "Frappé Glacé", price: 400 },
-      { name: "Jus de Fruit", price: 500 },
+      { name: "Jus de Fruit", price: 500, flavors: ["Fraise", "Orange"] },
       { name: "Ice Tea", price: 600 },
     ],
     nourriture: [
-      { name: "Sucette", price: 300 },
-      { name: "Barbe à papa", price: 300 },
-      { name: "Glace", price: 600 },
+      { name: "Sucette", price: 300, flavors: ["Cerise", "Fraise"] },
+      { name: "Barbe à papa", price: 300, flavors: ["Kiwi", "Framboise"] },
+      { name: "Glace", price: 600, flavors: ["Vanille", "Chocolat", "Fraise", "Pistache"] },
       { name: "Rouleau de Printemps", price: 700 },
       { name: "Nem Poulet", price: 700 },
     ],
@@ -450,22 +513,61 @@
     });
 
     const boissonEl = document.getElementById('boissons');
-    MENU.boissons.forEach(item => {
-      const btn = document.createElement('button');
-      btn.className = 'item-btn';
-      btn.innerHTML = `<span class="name">${item.name}</span><span class="price">${fmt(item.price)}</span>`;
-      btn.onclick = () => addToCart(item.name, item.price);
-      boissonEl.appendChild(btn);
-    });
+    MENU.boissons.forEach(item => boissonEl.appendChild(createItemCard(item)));
 
     const nourritureEl = document.getElementById('nourriture');
-    MENU.nourriture.forEach(item => {
+    MENU.nourriture.forEach(item => nourritureEl.appendChild(createItemCard(item)));
+  }
+
+  function createItemCard(item) {
+    if (!item.flavors) {
       const btn = document.createElement('button');
       btn.className = 'item-btn';
       btn.innerHTML = `<span class="name">${item.name}</span><span class="price">${fmt(item.price)}</span>`;
       btn.onclick = () => addToCart(item.name, item.price);
-      nourritureEl.appendChild(btn);
-    });
+      return btn;
+    }
+
+    const flip = document.createElement('div');
+    flip.className = 'flip-card';
+
+    const inner = document.createElement('div');
+    inner.className = 'flip-inner';
+
+    const front = document.createElement('button');
+    front.className = 'item-btn flip-front';
+    front.innerHTML = `
+      <button class="info-btn" type="button" aria-label="Voir les saveurs">i</button>
+      <span class="name">${item.name}</span>
+      <span class="price">${fmt(item.price)}</span>
+    `;
+    front.onclick = (e) => {
+      if (e.target.closest('.info-btn')) return;
+      addToCart(item.name, item.price);
+    };
+    front.querySelector('.info-btn').onclick = (e) => {
+      e.stopPropagation();
+      flip.classList.add('flipped');
+    };
+
+    const back = document.createElement('button');
+    back.className = 'item-btn flip-back';
+    back.innerHTML = `
+      <button class="info-btn back-btn" type="button" aria-label="Retour">✕</button>
+      <span class="flavors">${item.flavors.join(' · ')}</span>
+    `;
+    back.onclick = (e) => {
+      if (e.target.closest('.info-btn')) return;
+    };
+    back.querySelector('.info-btn').onclick = (e) => {
+      e.stopPropagation();
+      flip.classList.remove('flipped');
+    };
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    flip.appendChild(inner);
+    return flip;
   }
 
   function addToCart(name, price) {
