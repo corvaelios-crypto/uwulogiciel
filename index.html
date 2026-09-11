@@ -519,6 +519,79 @@
   }
   .clear-btn:active { background: rgba(229,57,95,0.12); }
 
+  .validate-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent));
+    border: none;
+    color: #fff;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 12px rgba(255,79,195,0.25);
+  }
+  .validate-btn:active { transform: scale(0.97); }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58,16,48,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+  .modal {
+    width: 100%;
+    max-width: 460px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .history-total {
+    text-align: center;
+    color: var(--accent-3);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  .history-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+  .history-entry {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .history-entry .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    color: var(--accent-3);
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+  }
+  .history-entry .items {
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+  .history-empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 30px 0;
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+
 </style>
 </head>
 <body>
@@ -532,6 +605,7 @@
   <div class="header-actions">
     <button class="flavors-toggle" id="menuToggle" type="button">Event</button>
     <button class="flavors-toggle" id="flavorsToggle" type="button">Saveurs</button>
+    <button class="flavors-toggle" id="historyToggle" type="button">Historique</button>
   </div>
 </header>
 
@@ -566,8 +640,21 @@
         <div class="amount" id="totalAmount">0$</div>
       </div>
 
+      <button class="validate-btn" id="validateCart">Commande validée</button>
       <button class="clear-btn" id="clearCart">Vider le panier</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="historyOverlay" hidden>
+  <div class="modal card">
+    <div class="section-nav">
+      <div class="section-title section-title-nav">Historique</div>
+      <button class="section-arrow" id="closeHistory">✕</button>
+    </div>
+    <div class="history-total" id="historyTotal"></div>
+    <div class="history-list" id="historyList"></div>
+    <button class="clear-btn" id="clearHistory">Vider l'historique</button>
   </div>
 </div>
 
@@ -934,6 +1021,82 @@
   function updateTotal() {
     document.getElementById('totalAmount').textContent = fmt(getTotal());
   }
+
+  const HISTORY_KEY = 'uwuCafeHistory';
+
+  function loadHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveHistory(history) {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }
+
+  function renderHistory() {
+    const history = loadHistory();
+    const listEl = document.getElementById('historyList');
+    const totalEl = document.getElementById('historyTotal');
+    listEl.innerHTML = '';
+
+    if (history.length === 0) {
+      listEl.innerHTML = '<div class="history-empty">Aucune commande validée</div>';
+      totalEl.textContent = '';
+      return;
+    }
+
+    const grandTotal = history.reduce((sum, order) => sum + order.total, 0);
+    totalEl.textContent = `${history.length} commande${history.length > 1 ? 's' : ''}, total ${fmt(grandTotal)}`;
+
+    history.slice().reverse().forEach(order => {
+      const entry = document.createElement('div');
+      entry.className = 'history-entry';
+      const itemsLabel = order.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+      entry.innerHTML = `
+        <div class="head"><span>${order.time}</span><span>${fmt(order.total)}</span></div>
+        <div class="items">${itemsLabel}</div>
+      `;
+      listEl.appendChild(entry);
+    });
+  }
+
+  document.getElementById('validateCart').onclick = () => {
+    if (cart.length === 0) return;
+    const history = loadHistory();
+    history.push({
+      time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+      total: getTotal(),
+      items: cart.map(c => ({ name: c.name, qty: c.qty })),
+    });
+    saveHistory(history);
+    cart = [];
+    renderCart();
+  };
+
+  document.getElementById('historyToggle').onclick = () => {
+    renderHistory();
+    document.getElementById('historyOverlay').hidden = false;
+  };
+
+  document.getElementById('closeHistory').onclick = () => {
+    document.getElementById('historyOverlay').hidden = true;
+  };
+
+  document.getElementById('historyOverlay').onclick = (e) => {
+    if (e.target.id === 'historyOverlay') {
+      document.getElementById('historyOverlay').hidden = true;
+    }
+  };
+
+  document.getElementById('clearHistory').onclick = () => {
+    if (confirm("Vider tout l'historique des commandes ? Cette action est irréversible.")) {
+      saveHistory([]);
+      renderHistory();
+    }
+  };
 
   document.getElementById('clearCart').onclick = () => {
     cart = [];
