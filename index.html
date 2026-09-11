@@ -172,6 +172,41 @@
     align-content: center;
   }
 
+  .section-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .section-title-nav {
+    margin: 0;
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+  }
+  .section-arrow {
+    background: var(--panel-2);
+    border: 2px solid var(--border);
+    color: var(--accent-3);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-arrow:active { background: var(--accent); color: #fff; transform: scale(0.92); }
+  .section-arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .section-arrow:disabled:active { background: var(--panel-2); color: var(--accent-3); transform: none; }
+
   .card {
     background: var(--panel);
     backdrop-filter: blur(10px);
@@ -649,6 +684,7 @@
   };
 
   let currentMenu = 'event';
+  let sectionIndex = 0;
 
   let cart = [];
   let lastAddKey = '';
@@ -685,21 +721,56 @@
       comboEl.appendChild(btn);
     });
 
+    sectionIndex = 0;
+    renderSection();
+  }
+
+  function renderSection() {
+    const menu = MENUS[currentMenu];
+    const section = menu.sections[sectionIndex];
+
     const menuCol = document.getElementById('menuCol');
     menuCol.innerHTML = '';
-    menu.sections.forEach(section => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      const title = document.createElement('div');
-      title.className = 'section-title';
-      title.textContent = section.title;
-      const grid = document.createElement('div');
-      grid.className = 'grid-items';
-      section.items.forEach(item => grid.appendChild(createItemCard(item)));
-      card.appendChild(title);
-      card.appendChild(grid);
-      menuCol.appendChild(card);
-    });
+
+    const card = document.createElement('div');
+    card.className = 'card section-card';
+
+    const nav = document.createElement('div');
+    nav.className = 'section-nav';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'section-arrow';
+    prevBtn.textContent = '‹';
+    prevBtn.disabled = menu.sections.length <= 1;
+    prevBtn.onclick = () => {
+      sectionIndex = (sectionIndex - 1 + menu.sections.length) % menu.sections.length;
+      renderSection();
+    };
+
+    const title = document.createElement('div');
+    title.className = 'section-title section-title-nav';
+    title.textContent = `${section.title} (${sectionIndex + 1}/${menu.sections.length})`;
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'section-arrow';
+    nextBtn.textContent = '›';
+    nextBtn.disabled = menu.sections.length <= 1;
+    nextBtn.onclick = () => {
+      sectionIndex = (sectionIndex + 1) % menu.sections.length;
+      renderSection();
+    };
+
+    nav.appendChild(prevBtn);
+    nav.appendChild(title);
+    nav.appendChild(nextBtn);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid-items';
+    section.items.forEach(item => grid.appendChild(createItemCard(item)));
+
+    card.appendChild(nav);
+    card.appendChild(grid);
+    menuCol.appendChild(card);
   }
 
   function createItemCard(item) {
