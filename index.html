@@ -724,12 +724,17 @@
 
   function renderCombos() {
     const menu = MENUS[currentMenu];
-    const pageCount = Math.ceil(menu.combos.length / COMBOS_PER_PAGE);
-    const pageItems = menu.combos.slice(comboPage * COMBOS_PER_PAGE, comboPage * COMBOS_PER_PAGE + COMBOS_PER_PAGE);
+    const paginated = currentMenu !== 'event';
+    const pageCount = paginated ? Math.ceil(menu.combos.length / COMBOS_PER_PAGE) : 1;
+    const pageItems = paginated
+      ? menu.combos.slice(comboPage * COMBOS_PER_PAGE, comboPage * COMBOS_PER_PAGE + COMBOS_PER_PAGE)
+      : menu.combos;
 
-    document.getElementById('combosTitle').textContent = `Combos (${comboPage + 1}/${pageCount})`;
-    document.getElementById('combosPrev').disabled = pageCount <= 1;
-    document.getElementById('combosNext').disabled = pageCount <= 1;
+    document.getElementById('combosTitle').textContent = paginated ? `Combos (${comboPage + 1}/${pageCount})` : 'Combos';
+    document.getElementById('combosPrev').disabled = !paginated || pageCount <= 1;
+    document.getElementById('combosNext').disabled = !paginated || pageCount <= 1;
+    document.getElementById('combosPrev').style.visibility = paginated ? 'visible' : 'hidden';
+    document.getElementById('combosNext').style.visibility = paginated ? 'visible' : 'hidden';
 
     const comboEl = document.getElementById('combos');
     comboEl.innerHTML = '';
@@ -744,10 +749,27 @@
 
   function renderSection() {
     const menu = MENUS[currentMenu];
-    const section = menu.sections[sectionIndex];
-
     const menuCol = document.getElementById('menuCol');
     menuCol.innerHTML = '';
+
+    if (currentMenu === 'event') {
+      menu.sections.forEach(section => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const title = document.createElement('div');
+        title.className = 'section-title';
+        title.textContent = section.title;
+        const grid = document.createElement('div');
+        grid.className = 'grid-items';
+        section.items.forEach(item => grid.appendChild(createItemCard(item)));
+        card.appendChild(title);
+        card.appendChild(grid);
+        menuCol.appendChild(card);
+      });
+      return;
+    }
+
+    const section = menu.sections[sectionIndex];
 
     const card = document.createElement('div');
     card.className = 'card section-card';
