@@ -71,11 +71,15 @@
   header .logo {
     animation: logoPop 0.6s cubic-bezier(.34,1.56,.64,1) both;
   }
-  .flavors-toggle {
+  .header-actions {
     position: absolute;
     right: 16px;
     top: 55%;
     transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  .flavors-toggle {
     background: #fff;
     border: 2px solid var(--accent);
     color: var(--accent-3);
@@ -86,7 +90,7 @@
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(255,79,195,0.15);
   }
-  .flavors-toggle:active { transform: translateY(-50%) scale(0.95); }
+  .flavors-toggle:active { transform: scale(0.95); }
   .flavors-toggle.active {
     background: var(--accent);
     color: #fff;
@@ -473,7 +477,10 @@
     <h1>UwU Cafe - Caisse</h1>
     <div class="sub">Menu Event</div>
   </div>
-  <button class="flavors-toggle" id="flavorsToggle" type="button">Saveurs</button>
+  <div class="header-actions">
+    <button class="flavors-toggle" id="menuToggle" type="button">Normal</button>
+    <button class="flavors-toggle" id="flavorsToggle" type="button">Saveurs</button>
+  </div>
 </header>
 
 <div class="layout">
@@ -485,17 +492,7 @@
   </div>
 
   <div class="lower">
-    <div class="menu-col">
-      <div class="card">
-        <div class="section-title">Boissons</div>
-        <div class="grid-items" id="boissons"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">Nourriture</div>
-        <div class="grid-items" id="nourriture"></div>
-      </div>
-    </div>
+    <div class="menu-col" id="menuCol"></div>
 
     <div class="cart-panel card">
       <div class="section-title">Panier</div>
@@ -516,40 +513,142 @@
 </div>
 
 <script>
-  const MENU = {
-    combos: [
-      {
-        name: "Le Ptit Nouveau", price: 3000,
-        contents: [{ label: "Boissons", qty: 2 }, { label: "Sucrées", qty: 2 }],
-      },
-      {
-        name: "Le Chejeûner", price: 5000,
-        contents: [{ label: "Boissons", qty: 3 }, { label: "Plats", qty: 3 }],
-      },
-      {
-        name: "Le Mini Senior", price: 7000,
-        contents: [{ label: "Boissons Froides", qty: 3 }, { label: "Boissons Chaudes", qty: 3 }, { label: "Plats", qty: 3 }],
-      },
-      {
-        name: "Le Sphinx Malin", price: 15000,
-        contents: [{ label: "Boissons Froides", qty: 5 }, { label: "Plats", qty: 5 }, { label: "Sucrées", qty: 5 }, { label: "Boissons Chaudes", qty: 5 }],
-      },
-    ],
-    boissons: [
-      { name: "Café", price: 400 },
-      { name: "Thé Matcha", price: 400 },
-      { name: "Frappé Glacé", price: 400 },
-      { name: "Jus de Fruit", price: 500, flavors: ["Fraise", "Orange"] },
-      { name: "Ice Tea", price: 600 },
-    ],
-    nourriture: [
-      { name: "Sucette", price: 300, flavors: ["Cerise", "Fraise"] },
-      { name: "Barbe à papa", price: 300, flavors: ["Kiwi", "Framboise"] },
-      { name: "Glace", price: 600, flavors: ["Vanille", "Chocolat", "Fraise", "Pistache"] },
-      { name: "Rouleau de Printemps", price: 700 },
-      { name: "Nem Poulet", price: 700 },
-    ],
+  const MENUS = {
+    event: {
+      label: "Menu Event",
+      combos: [
+        {
+          name: "Le Ptit Nouveau", price: 3000,
+          contents: [{ label: "Boissons", qty: 2 }, { label: "Sucrées", qty: 2 }],
+        },
+        {
+          name: "Le Chejeûner", price: 5000,
+          contents: [{ label: "Boissons", qty: 3 }, { label: "Plats", qty: 3 }],
+        },
+        {
+          name: "Le Mini Senior", price: 7000,
+          contents: [{ label: "Boissons Froides", qty: 3 }, { label: "Boissons Chaudes", qty: 3 }, { label: "Plats", qty: 3 }],
+        },
+        {
+          name: "Le Sphinx Malin", price: 15000,
+          contents: [{ label: "Boissons Froides", qty: 5 }, { label: "Plats", qty: 5 }, { label: "Sucrées", qty: 5 }, { label: "Boissons Chaudes", qty: 5 }],
+        },
+      ],
+      sections: [
+        {
+          title: "Boissons",
+          items: [
+            { name: "Café", price: 400 },
+            { name: "Thé Matcha", price: 400 },
+            { name: "Frappé Glacé", price: 400 },
+            { name: "Jus de Fruit", price: 500, flavors: ["Fraise", "Orange"] },
+            { name: "Ice Tea", price: 600 },
+          ],
+        },
+        {
+          title: "Nourriture",
+          items: [
+            { name: "Sucette", price: 300, flavors: ["Cerise", "Fraise"] },
+            { name: "Barbe à papa", price: 300, flavors: ["Kiwi", "Framboise"] },
+            { name: "Glace", price: 600, flavors: ["Vanille", "Chocolat", "Fraise", "Pistache"] },
+            { name: "Rouleau de Printemps", price: 700 },
+            { name: "Nem Poulet", price: 700 },
+          ],
+        },
+      ],
+    },
+    normal: {
+      label: "Menu Normal",
+      combos: [
+        {
+          name: "Le Ptit Nouveau", price: 3000,
+          contents: [{ label: "Boissons", qty: 2 }, { label: "Sucrées", qty: 2 }],
+        },
+        {
+          name: "Le Chaton", price: 3500,
+          contents: [{ label: "Jus de Fruits", qty: 3 }, { label: "Sucrées", qty: 4 }],
+        },
+        {
+          name: "Le Matounal", price: 4000,
+          contents: [{ label: "Jus de Fruits", qty: 3 }, { label: "Boissons Chaudes", qty: 3 }, { label: "Sucrées", qty: 3 }],
+        },
+        {
+          name: "Le Ptit Goûter", price: 4500,
+          contents: [{ label: "Bubble Tea", qty: 2 }, { label: "Boissons Chaudes", qty: 2 }, { label: "Sucrées", qty: 3 }],
+        },
+        {
+          name: "Le Chejeûner", price: 5000,
+          contents: [{ label: "Boissons", qty: 3 }, { label: "Plats", qty: 3 }],
+        },
+        {
+          name: "Le Mini Senior", price: 7000,
+          contents: [{ label: "Boissons Froides", qty: 3 }, { label: "Boissons Chaudes", qty: 3 }, { label: "Plats", qty: 3 }],
+        },
+        {
+          name: "Le Sphinx Malin", price: 15000,
+          contents: [{ label: "Boissons Froides", qty: 5 }, { label: "Plats", qty: 5 }, { label: "Sucrées", qty: 5 }, { label: "Boissons Chaudes", qty: 5 }],
+        },
+        {
+          name: "Policat", price: 2000,
+          contents: [{ label: "Café", qty: 3 }, { label: "Donut Fraise", qty: 3 }],
+        },
+        {
+          name: "La Zefrai", price: 9000,
+          contents: [{ label: "Bubble Tea Fraise", qty: 5 }, { label: "Mochi Fraise", qty: 5 }, { label: "Donut Fraise", qty: 5 }, { label: "Junk Energie Rose", qty: 5 }],
+        },
+        {
+          name: "Panda Brun", price: 10000,
+          contents: [{ label: "Bubble Tea Chocolat", qty: 5 }, { label: "Café Latté", qty: 5 }, { label: "Glace Vanille", qty: 5 }, { label: "Mochi Chocolat", qty: 5 }],
+        },
+      ],
+      sections: [
+        {
+          title: "Boissons Chaudes",
+          items: [
+            { name: "Café", price: 400 },
+            { name: "Thé Matcha", price: 400 },
+            { name: "Café Latte", price: 600 },
+            { name: "Cappucino", price: 600 },
+            { name: "Chocolat Chaud", price: 600 },
+            { name: "Thé Vert", price: 700 },
+          ],
+        },
+        {
+          title: "Boissons Froides",
+          items: [
+            { name: "Frappé Glacé", price: 400 },
+            { name: "Jus de Fruit", price: 500, flavors: ["Pomme", "Orange", "Fraise", "Kiwi", "Banane"] },
+            { name: "Bouteille de Lait", price: 500 },
+            { name: "Ice Tea", price: 600 },
+            { name: "Junk Energie", price: 700, flavors: ["Rose", "Violet", "Vert", "Jaune"] },
+            { name: "Bubble Tea", price: 700, flavors: ["Chocolat", "Fraise", "Framboise", "Pêche", "Kiwi", "Exotic"] },
+          ],
+        },
+        {
+          title: "Nourriture Sucrée",
+          items: [
+            { name: "Sucette", price: 300, flavors: ["Cerise", "Fraise", "Framboise", "Orange", "Citron"] },
+            { name: "Donut", price: 500, flavors: ["Fraise", "Chocolat", "Kiwi"] },
+            { name: "Glace", price: 600, flavors: ["Vanille", "Chocolat", "Fraise", "Pistache", "Cerise", "Framboise"] },
+            { name: "Mochi", price: 600, flavors: ["Fraise", "Chocolat"] },
+            { name: "CheeseCake", price: 700 },
+            { name: "Churros Chocolat", price: 700 },
+          ],
+        },
+        {
+          title: "Nourriture Salée",
+          items: [
+            { name: "Rouleau de Printemps", price: 700 },
+            { name: "Sushis", price: 850 },
+            { name: "Tacos", price: 850 },
+            { name: "Nachos", price: 900 },
+          ],
+        },
+      ],
+    },
   };
+
+  let currentMenu = 'event';
 
   let cart = [];
   let lastAddKey = '';
@@ -573,8 +672,12 @@
   }
 
   function renderMenu() {
+    const menu = MENUS[currentMenu];
+    document.querySelector('header .sub').textContent = menu.label;
+
     const comboEl = document.getElementById('combos');
-    MENU.combos.forEach(item => {
+    comboEl.innerHTML = '';
+    menu.combos.forEach(item => {
       const btn = document.createElement('button');
       btn.className = 'item-btn combo-btn';
       btn.innerHTML = `<span class="name"><span class="title">${item.name}</span><span class="desc">${contentsLabel(item.contents, 1)}</span></span><span class="price">${fmt(item.price)}</span>`;
@@ -582,11 +685,21 @@
       comboEl.appendChild(btn);
     });
 
-    const boissonEl = document.getElementById('boissons');
-    MENU.boissons.forEach(item => boissonEl.appendChild(createItemCard(item)));
-
-    const nourritureEl = document.getElementById('nourriture');
-    MENU.nourriture.forEach(item => nourritureEl.appendChild(createItemCard(item)));
+    const menuCol = document.getElementById('menuCol');
+    menuCol.innerHTML = '';
+    menu.sections.forEach(section => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = section.title;
+      const grid = document.createElement('div');
+      grid.className = 'grid-items';
+      section.items.forEach(item => grid.appendChild(createItemCard(item)));
+      card.appendChild(title);
+      card.appendChild(grid);
+      menuCol.appendChild(card);
+    });
   }
 
   function createItemCard(item) {
@@ -692,6 +805,15 @@
   document.getElementById('flavorsToggle').onclick = (e) => {
     document.body.classList.toggle('show-flavors');
     e.currentTarget.classList.toggle('active');
+  };
+
+  document.getElementById('menuToggle').onclick = (e) => {
+    currentMenu = currentMenu === 'event' ? 'normal' : 'event';
+    e.currentTarget.textContent = currentMenu === 'event' ? 'Normal' : 'Event';
+    e.currentTarget.classList.toggle('active', currentMenu === 'normal');
+    document.body.classList.remove('show-flavors');
+    document.getElementById('flavorsToggle').classList.remove('active');
+    renderMenu();
   };
 
   renderMenu();
